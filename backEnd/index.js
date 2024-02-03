@@ -1,22 +1,30 @@
-const express = require("express");
-const { config } = require("dotenv");
-const chats = require("./dummyData/data");
-const cors = require("cors");
+const express = require("express"); // i) first install express
+const app = express(); // ii) app is used for creating a web server and routing
+const mongoose = require("mongoose"); // iii) then install mongoose
+const { config } = require("dotenv"); //the two lines are used for the .env file
 config();
+const cors = require("cors"); // cors for allow application to authorized url
+const { notFound, errorHandler } = require("./Middlewares/errorHandlers");
+const userRoutes = require("./routes/userRoutes");
 const PORT = process.env.PORT || 8000;
-const app = express();
+
 app.use(express.json());
 app.use(cors());
-app.get("/", (req, res) => {
-  return res.send("hello client");
-});
 
-app.get("/api/chats", (req, res) => {
-  return res.json(chats);
-});
+app.use("/api/user", userRoutes); //it is first route to get the users data or post the users data
 
-app.get("/api/chats/:id", (req, res) => {
-  return res.json(chats.find((c) => c._id === req.params.id));
-});
+app.use(notFound); // it is middleware used for handle page not found error.
+app.use(errorHandler);
 
-app.listen(PORT, () => console.log("Server is running on port : " + PORT));
+//these lines are used to connect mongodb in node js with the help of mongoose.
+main().catch((err) => console.log(err.message)); //it executes program for the connection . if it is arrow function then we cannot use the function before the function declared
+async function main() {
+  const connect = await mongoose.connect(process.env.MONGODB_URI);
+  console.log(`MongoDB connected ${connect.connection.host}`);
+  app.listen(PORT, () => console.log("Server is running on port : " + PORT));
+}
+
+/* 
+i) . after this , first create the schema for data.(go to the Models folder)
+ii). after create the middleware for routes .(go to the routes folder)
+*/
