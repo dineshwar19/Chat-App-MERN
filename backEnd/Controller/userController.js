@@ -47,7 +47,6 @@ const logUser = asyncHandler(async (req, res) => {
     throw new Error("please fill all the fields");
   }
   const user = await User.findOne({ email });
-  console.log(user);
   if (user && (await user.comparePassword(password))) {
     // we need to encrypt the password before save into the database so use bcryptjs package.(go to userSchema.js)
     res.status(201).json({
@@ -57,8 +56,7 @@ const logUser = asyncHandler(async (req, res) => {
       picture: user.picture,
     });
   } else {
-    res.status(401).json({ error: "Invalid Email or password" });
-    throw new Error("Invalid Email or Password");
+    return res.status(401).json({ error: "Invalid Email or password" });
   }
 });
 module.exports = { regUser, logUser };
