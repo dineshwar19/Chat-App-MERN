@@ -35,7 +35,7 @@ const FormComponent = ({
         required
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="bg-inherit p-2 border-b outline-none placeholder:text-gray-500 "
+        className="bg-inherit p-2 border-0 border-b outline-none placeholder:text-gray-500"
       />
       <input
         type="email"
@@ -43,7 +43,7 @@ const FormComponent = ({
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="bg-inherit p-2 border-b outline-none placeholder:text-gray-500 "
+        className="bg-inherit p-2 border-0 border-b outline-none placeholder:text-gray-500 "
       />
       <div className="relative">
         <input
@@ -52,7 +52,7 @@ const FormComponent = ({
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-inherit p-2 border-b outline-none placeholder:text-gray-500 w-full "
+          className="bg-inherit p-2 border-0 border-b outline-none placeholder:text-gray-500 w-full "
         />
         <button
           className="absolute top-4 right-0"
@@ -70,7 +70,7 @@ const FormComponent = ({
           required
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className="bg-inherit p-2 border-b outline-none placeholder:text-gray-500 w-full "
+          className="bg-inherit p-2 border-0 border-b outline-none placeholder:text-gray-500 w-full "
         />
         <button
           className="absolute top-4 right-0"

@@ -32,6 +32,7 @@ const SignUp = ({ changeState }) => {
       const res = await axios.post("http://localhost:8000/api/user", userData);
       console.log(res.data);
       if (!res.status == 200) throw new Error("Data is not Posted");
+      localStorage.setItem("userInfo" , JSON.stringify(res.data))
       enqueueSnackbar("Data was successfully stored", { variant: "success" });
       setPicLoading(false);
       navigate("/chats");

@@ -27,6 +27,8 @@ const Login = ({ changeState }) => {
       );
       if (!res.status == 200) throw new Error();
       enqueueSnackbar("Successfully Logged", { variant: "success" });
+
+      localStorage.setItem("userInfo", JSON.stringify(res.data));
       setPicLoading(false);
       navigate("/chats");
     } catch (error) {

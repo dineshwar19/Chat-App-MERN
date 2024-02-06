@@ -1,31 +1,21 @@
-import React, { useEffect } from "react";
-import axios from "axios";
-import { useState } from "react";
+import React, { useContext, useEffect } from "react";
+import ChatContext from "../context/ChatContext";
+import SideBar from "../components/SideBar";
+import ChatMember from "../components/ChatMember";
+import ChatBox from "../components/ChatBox";
+
 const ChatPage = () => {
-  const [chats, setChats] = useState([]);
-  useEffect(() => {
-    const fetchMsg = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/api/chats");
-        if (response.status !== 200) throw new Error("data is not found");
-        setChats(response.data);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-    fetchMsg();
-  }, []);
+  const { user } = useContext(ChatContext);
   return (
-    <div>
-      {chats && (
-        <ul>
-          {chats.map(chat => (
-            <li key={chat._id}>
-              {chat.chatName}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="text-white">
+      <div>
+        {user && <SideBar />}
+      </div>
+
+      <div className="flex justify-between">
+        {user && <ChatMember />}
+        {user && <ChatBox />}
+      </div>
     </div>
   );
 };

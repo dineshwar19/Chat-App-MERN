@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler"); // handling exceptions inside of async express routes and passing them to your express error handlers
 const User = require("../Models/UserSchema"); //it is the collection of the user data
 const generateToken = require("../Config/generateToken");
+
 const regUser = asyncHandler(async (req, res) => {
   const { name, email, password, picture } = req.body; //get the data from the request
 
@@ -30,6 +31,7 @@ const regUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      isAdmin: user.isAdmin,
       picture: user.picture,
       token: generateToken(user._id),
     });
@@ -53,10 +55,28 @@ const logUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      isAdmin: user.isAdmin,
       picture: user.picture,
+      token: generateToken(user._id),
     });
   } else {
     return res.status(401).json({ error: "Invalid Email or password" });
   }
 });
-module.exports = { regUser, logUser };
+
+const allUser = asyncHandler(async (req, res) => {
+  // req.query this return an object {search : userName , one : user2} when the url look like this http://localhost:8000/api/user?search=userName&&one=user2
+
+  const search = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+  //before use the id : $ne , first create the authorization middleware
+  const user = await User.find(search).find({ _id: { $ne: req.user._id } });
+  res.send(user);
+});
+module.exports = { regUser, logUser, allUser };
