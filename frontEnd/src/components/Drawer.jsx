@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { clsx } from "clsx";
 import { IoSearch } from "react-icons/io5";
+import { useSnackbar } from "notistack";
+import ChatContext from "../context/ChatContext";
+import axios from "axios";
+import SearchUserList from "./SearchUserList";
 const openClassNames = {
   right: "translate-x-0",
   left: "translate-x-0",
@@ -23,6 +27,72 @@ const classNames = {
 };
 
 const Drawer = ({ open, setOpen, side = "right" }) => {
+  const [search, setSearch] = useState();
+  const [searchResult, setSearchResult] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
+  const {
+    setSelectedChat,
+    user,
+    notification,
+    setNotification,
+    chats,
+    setChats,
+  } = useContext(ChatContext);
+  const [loading, setLoading] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const handleSearch = async () => {
+    if (!search) {
+      enqueueSnackbar("Search is empty", { variant: "error" });
+      return;
+    }
+    try {
+      setLoading(true);
+      const config = {
+        headers: { Authorization: `Bearer ${user.token}` },
+      };
+      const res = await axios.get(
+        `http://localhost:8000/api/user/?search=${search}`,
+        config
+      );
+      if (res.status !== 200) throw new Error();
+      setSearchResult(res.data);
+      console.log(searchResult);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.message);
+      setLoading(false);
+    }
+  };
+
+  const showUser = async (userId) => {
+    try {
+      setLoadingChat(true);
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post(
+        `http://localhost:8000/api/chat`,
+        { userId },
+        config
+      );
+      if (
+        !chats.find((chat) => {
+          chat._id === data._id;
+        })
+      )
+        setChats([data, ...chats]);
+      setSelectedChat(data);
+      setLoadingChat(false);
+      setOpen(!open);
+    } catch (error) {
+      enqueueSnackbar("Error occured when fetching the chat", {
+        variant: "error",
+      });
+    }
+  };
   return (
     <div
       id={`dialog-${side}`}
@@ -71,12 +141,27 @@ const Drawer = ({ open, setOpen, side = "right" }) => {
                     <input
                       type="text"
                       placeholder="Search"
-                      className="rounded-md mt-5 p-2 outline-none"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="rounded-md mt-5 p-2 px-4 outline-none"
                     />
                     <IoSearch
-                      className="absolute bottom-2 right-2 z-30 bg-white"
+                      className="absolute bottom-2 right-2 z-30 bg-white transition-scale duration-100 hover:scale-110 cursor-pointer"
                       size={25}
+                      onClick={handleSearch}
                     />
+                  </div>
+
+                  <div>
+                    {loading
+                      ? "loading"
+                      : searchResult.map((user) => (
+                          <SearchUserList
+                            key={user._id}
+                            user={user}
+                            showUser={() => showUser(user._id)}
+                          />
+                        ))}
                   </div>
                 </div>
               </div>

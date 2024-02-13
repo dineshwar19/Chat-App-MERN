@@ -3,18 +3,15 @@ import { IoSearch } from "react-icons/io5";
 import { FiBell } from "react-icons/fi";
 import ChatContext from "../context/ChatContext";
 import "flowbite";
-import "flowbite-react";
-// import ProfileModal from "./ProfileModal";
+import { Avatar, Dropdown } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import Drawer from "./Drawer";
+import ProfileModal from "./ProfileModal";
 const SideBar = () => {
   const { user } = useContext(ChatContext);
   const navigate = useNavigate();
-  // const [isOpen, setIsOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [openLeft, setOpenLeft] = useState(false);
-  // const open = () => {
-  //   setIsOpen(!isOpen);
-  // };
   const logOutUser = () => {
     localStorage.removeItem("userInfo");
     navigate("/");
@@ -36,52 +33,33 @@ const SideBar = () => {
       <div className="flex justify-center items-center gap-2">
         <FiBell size={20} />
 
-        <img
-          id="avatarButton"
-          type="button"
-          data-dropdown-toggle="userDropdown"
-          data-dropdown-placement="bottom-start"
-          class="w-10 h-10 rounded-full cursor-pointer"
-          src={
-            user.picture
-              ? user.picture
-              : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+        <Dropdown
+          label={
+            <Avatar
+              alt="User settings"
+              img={
+                user.picture
+                  ? user.picture
+                  : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+              }
+              rounded
+            />
           }
-          alt={user.name.charAt(0)}
-        />
-
-        {/* <!-- Dropdown menu --> */}
-        <div
-          id="userDropdown"
-          class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+          arrowIcon={false}
+          inline
         >
-          <ul
-            class="py-2 text-sm text-gray-700 dark:text-gray-200"
-            aria-labelledby="avatarButton"
+          <Dropdown.Item
+            className="flex flex-col items-start"
+            onClick={() => setOpenModal(true)}
           >
-            <li>
-              <button
-                data-modal-target="static-modal"
-                data-modal-toggle="static-modal"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white w-full"
-                type="button"
-                // onClick={open}
-              >
-                My Profile
-              </button>
-              {/* <ProfileModal isOpen={isOpen} /> */}
-            </li>
-          </ul>
-          <div class="py-1">
-            <button
-              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white w-full"
-              onClick={logOutUser}
-            >
-              Log out
-            </button>
-          </div>
-        </div>
+            <div className="">{user.name}</div>
+            <div className="">{user.email}</div>
+          </Dropdown.Item>
+
+          <Dropdown.Item onClick={logOutUser}>Sign out</Dropdown.Item>
+        </Dropdown>
         <Drawer open={openLeft} side="left" setOpen={setOpenLeft} />
+        {/* <ProfileModal openModal={openModal} setOpenModal={setOpenModal} /> */}
       </div>
     </div>
   );
